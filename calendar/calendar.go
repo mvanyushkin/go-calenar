@@ -1,9 +1,9 @@
 package calendar
 
 import (
-	"go-calenar/calendar/entities"
-	"go-calenar/calendar/store"
-	"go-calenar/calendar/usecases"
+	"github.com/mvanyushkin/go-calendar/calendar/entities"
+	"github.com/mvanyushkin/go-calendar/calendar/store"
+	"github.com/mvanyushkin/go-calendar/calendar/usecases"
 	"time"
 )
 

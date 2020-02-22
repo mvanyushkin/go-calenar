@@ -1,4 +1,4 @@
-module go-calenar
+module github.com/mvanyushkin/go-calendar
 
 go 1.13
 

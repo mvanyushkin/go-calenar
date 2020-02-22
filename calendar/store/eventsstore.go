@@ -1,7 +1,7 @@
 package store
 
 import (
-	"go-calenar/calendar/entities"
+	"github.com/mvanyushkin/go-calendar/calendar/entities"
 )
 
 type EventStore interface {

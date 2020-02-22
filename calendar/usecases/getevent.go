@@ -1,8 +1,8 @@
 package usecases
 
 import (
-	"go-calenar/calendar/entities"
-	"go-calenar/calendar/errors"
+	"github.com/mvanyushkin/go-calendar/calendar/entities"
+	"github.com/mvanyushkin/go-calendar/calendar/errors"
 )
 
 type GetEventUseCase struct {

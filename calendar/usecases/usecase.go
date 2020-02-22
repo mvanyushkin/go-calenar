@@ -1,6 +1,6 @@
 package usecases
 
-import "go-calenar/calendar/store"
+import "github.com/mvanyushkin/go-calendar/calendar/store"
 
 type UseCase struct {
 	store store.EventStore

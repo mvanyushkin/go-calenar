@@ -1,10 +1,10 @@
 package usecases
 
 import (
+	"github.com/mvanyushkin/go-calendar/calendar/entities"
+	"github.com/mvanyushkin/go-calendar/calendar/errors"
+	"github.com/mvanyushkin/go-calendar/calendar/store"
 	"github.com/stretchr/testify/assert"
-	"go-calenar/calendar/entities"
-	"go-calenar/calendar/errors"
-	"go-calenar/calendar/store"
 	"testing"
 	"time"
 )

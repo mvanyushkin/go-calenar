@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	calendar2 "go-calenar/calendar"
+	calendar2 "github.com/mvanyushkin/go-calendar/calendar"
 	"time"
 )
-import store "go-calenar/calendar/store"
+import store "github.com/mvanyushkin/go-calendar/calendar/store"
 
 func main() {
 	s := store.NewInMemoryEventStore()

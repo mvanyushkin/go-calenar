@@ -2,7 +2,7 @@ package errors
 
 import (
 	"fmt"
-	"go-calenar/calendar/entities"
+	"github.com/mvanyushkin/go-calendar/calendar/entities"
 )
 
 type ErrNotFound struct {
