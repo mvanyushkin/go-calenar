@@ -11,7 +11,7 @@ import (
 
 func TestWhenIdIsCorrectAndEventExists(t *testing.T) {
 	var testId entities.Id = 999
-	s := store.NewInMemoryEventStoreFromSlice([]entities.Event{
+	s := store.NewInMemoryEventStore().LoadFromSlice([]entities.Event{
 		{Id: testId, Title: "", Description: "", Time: time.Now()},
 	})
 

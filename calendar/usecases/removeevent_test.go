@@ -15,7 +15,7 @@ func TestWhenRemovingEventExists(t *testing.T) {
 		Description: "",
 		Time:        time.Time{},
 	}
-	s := store.NewInMemoryEventStoreFromSlice([]entities.Event{
+	s := store.NewInMemoryEventStore().LoadFromSlice([]entities.Event{
 		event,
 	})
 

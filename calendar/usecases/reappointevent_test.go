@@ -29,7 +29,7 @@ func TestReappointEventWhenTimeIsFree(t *testing.T) {
 
 func TestReappointEventWhenTimeIsBusy(t *testing.T) {
 	var busyTime = time.Now()
-	var s = store.NewInMemoryEventStoreFromSlice([]entities.Event{{
+	var s = store.NewInMemoryEventStore().LoadFromSlice([]entities.Event{{
 		Id:          1,
 		Title:       "",
 		Description: "",

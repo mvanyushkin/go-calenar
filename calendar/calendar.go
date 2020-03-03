@@ -11,12 +11,8 @@ type calendar struct {
 	store *store.EventStore
 }
 
-func NewCalendar(store store.EventStore) calendar {
-	return calendar{store: &store}
-}
-
-func NewCal(store store.EventStore) calendar {
-	return calendar{store: &store}
+func NewCalendar(store store.EventStore) *calendar {
+	return &calendar{store: &store}
 }
 
 func (c *calendar) CreateEvent(title entities.Title, description entities.Description, desiredTime time.Time) (*entities.Event, error) {

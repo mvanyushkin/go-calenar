@@ -9,7 +9,7 @@ import (
 )
 
 func TestWhenStoreHasElements(t *testing.T) {
-	s := store.NewInMemoryEventStoreFromSlice([]entities.Event{{
+	s := store.NewInMemoryEventStore().LoadFromSlice([]entities.Event{{
 		Id:          0,
 		Title:       "",
 		Description: "",

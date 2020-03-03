@@ -30,14 +30,15 @@ func NewInMemoryEventStore() *inMemoryEventStore {
 	return &inMemoryEventStore{events: make([]entities.Event, 0)}
 }
 
-func NewInMemoryEventStoreFromSlice(events []entities.Event) *inMemoryEventStore {
-	return &inMemoryEventStore{events: events}
+func (s *inMemoryEventStore) LoadFromSlice(events []entities.Event) *inMemoryEventStore {
+	s.events = events
+	return s
 }
 
-func (s *inMemoryEventStore) Add(event *entities.Event) error {
+func (s *inMemoryEventStore) Add(event *entities.Event) (entities.Id, error) {
 	event.Id = getNextId()
 	s.events = append(s.events, *event)
-	return nil
+	return event.Id, nil
 }
 
 func (s *inMemoryEventStore) Remove(event *entities.Event) error {

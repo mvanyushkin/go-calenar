@@ -5,7 +5,7 @@ import (
 )
 
 type EventStore interface {
-	Add(event *entities.Event) error
+	Add(event *entities.Event) (entities.Id, error)
 	Remove(event *entities.Event) error
 	Update(event *entities.Event) error
 	List() ([]entities.Event, error)

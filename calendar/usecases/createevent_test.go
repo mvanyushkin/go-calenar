@@ -25,7 +25,7 @@ func TestCreateNewWhenTimeIsFree(t *testing.T) {
 
 func TestCreateNewWhenTimeIsBusy(t *testing.T) {
 	var busyTime = time.Now()
-	var s = store.NewInMemoryEventStoreFromSlice([]entities.Event{{
+	var s = store.NewInMemoryEventStore().LoadFromSlice([]entities.Event{{
 		Id:          1,
 		Title:       "",
 		Description: "",

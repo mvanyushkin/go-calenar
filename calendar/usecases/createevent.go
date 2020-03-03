@@ -36,11 +36,12 @@ func (u *CreateEventUseCase) Do() (*entities.Event, error) {
 		Time:        u.Time,
 	}
 
-	err = u.store.Add(newEvent)
+	id, err := u.store.Add(newEvent)
 	if err != nil {
 		return nil, err
 	}
 
+	newEvent.Id = id
 	return newEvent, err
 }
 
