@@ -1,42 +1,71 @@
 package main
 
 import (
+	"context"
+	"flag"
 	"fmt"
-	calendar2 "github.com/mvanyushkin/go-calendar/calendar"
-	"time"
+	"github.com/heetch/confita"
+	"github.com/heetch/confita/backend/env"
+	"github.com/heetch/confita/backend/file"
+	log "github.com/sirupsen/logrus"
+	"io"
+	"net/http"
+	"os"
 )
-import store "github.com/mvanyushkin/go-calendar/calendar/store"
 
 func main() {
-	s := store.NewInMemoryEventStore()
-	calendar := calendar2.NewCalendar(s)
-
-	println("Creating events...")
-	event1, _ := calendar.CreateEvent("TestEvent 1", "Description 1", time.Now())
-	event2, _ := calendar.CreateEvent("TestEvent 2", "Description 2", time.Now())
-	println("Done.")
-
-	println("Iterating by events..")
-	items, _ := calendar.List()
-	for _, item := range items {
-		fmt.Printf("Id: %v, Title %v \n", item.Id, item.Title)
+	cfg, err := GetConfig()
+	if err != nil {
+		fmt.Printf("The config file is broken: %v", err.Error())
+		os.Exit(-1)
 	}
 
-	println("Done.")
+	SetupLogger(cfg.LogFile, cfg.LogLevel)
 
-	println("Get by id ")
+	Serve(err, cfg)
+}
 
-	evt, _ := calendar.Get(event1.Id)
-	fmt.Printf("Given the event: %v \n", evt.Id)
+func Serve(err error, cfg *Config) {
+	http.HandleFunc("/hello", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer, "test string\n")
+	})
+	log.Print("Listen...")
+	err = http.ListenAndServe(cfg.HttpListen, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
 
-	println("Done.")
+func GetConfig() (*Config, error) {
+	configFilePath := flag.String("config", "", "settings file")
+	flag.Parse()
 
-	println("Removing events...")
+	loader := confita.NewLoader(
+		env.NewBackend(),
+		file.NewBackend(*configFilePath),
+	)
 
-	calendar.Remove(event1)
-	calendar.Remove(event2)
+	cfg := Config{}
+	err := loader.Load(context.Background(), &cfg)
+	if err != nil {
+		return nil, err
+	}
 
-	items, _ = calendar.List()
-	fmt.Printf("Items left %v \n", len(items))
-	println("Bye!")
+	return &cfg, nil
+}
+
+func SetupLogger(filePath string, logLevel string) {
+	f, err := os.OpenFile(filePath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0666)
+	log.SetOutput(os.Stdout)
+	if err == nil {
+		log.SetOutput(io.MultiWriter(os.Stdout, f))
+	} else {
+		log.Info("Failed to log to file, using default stderr")
+	}
+
+	level, err := log.ParseLevel(logLevel)
+	if err != nil {
+		log.Infof("Unknown log level %v", logLevel)
+	}
+	log.SetLevel(level)
 }
