@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package grpc;
+
+service Calendar {
+    rpc Create (CreateEventRequestDto) returns (CreateResponseDto);
+    rpc Update (UpdateEventRequestDto) returns (Empty);
+    rpc Remove (RemoveEventRequestDto) returns (Empty);
+    rpc GetForDate (Empty) returns (EventsResponse);
+    rpc GetForWeek (Empty) returns (EventsResponse);
+    rpc GetForMonth (Empty) returns (EventsResponse);
+}
+
+message EventDto {
+    string title = 1;
+    string description = 2;
+    int64 time = 3;
+}
+
+message CreateEventRequestDto {
+    EventDto data = 1;
+}
+
+message CreateResponseDto {
+    int32 id = 1;
+}
+
+message UpdateEventRequestDto {
+    int32 id = 1;
+    EventDto data = 2;
+}
+
+message RemoveEventRequestDto {
+    int32 id = 1;
+}
+
+message EventsResponse {
+    repeated CreateEventRequestDto events = 1;
+}
+
+message Empty {
+}

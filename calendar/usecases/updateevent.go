@@ -7,56 +7,54 @@ import (
 	"time"
 )
 
-type CreateEventUseCase struct {
+type UpdateEventUseCase struct {
 	UseCase
+	Id          entities.Id
 	Title       entities.Title
 	Description entities.Description
 	Time        time.Time
 }
 
-func (u *CreateEventUseCase) Do() (*entities.Event, error) {
-	validationErrors := validateCreateArgs(u)
+func (u *UpdateEventUseCase) Do() error {
+	validationErrors := validateUpdateArgs(u)
 	if len(validationErrors) > 0 {
-		return nil, errors.NewErrArgsInvalid(validationErrors)
+		return errors.NewErrArgsInvalid(validationErrors)
 	}
 
 	events, err := u.store.List()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	event, errTimeBusy := u.checkIfTimeIsBusy(events)
+	errTimeBusy := u.checkIfTimeIsBusy(events)
 	if errTimeBusy != nil {
-		return event, errTimeBusy
+		return errTimeBusy
 	}
 
-	newEvent := &entities.Event{
-		Title:       u.Title,
-		Description: u.Description,
-		Time:        u.Time,
-	}
-
-	id, err := u.store.Add(newEvent)
+	event, err := u.store.Get(u.Id)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	newEvent.Id = id
-	return newEvent, err
+	event.Time = u.Time
+	event.Title = u.Title
+	event.Description = u.Description
+
+	return u.store.Update(event)
 }
 
-func (u *CreateEventUseCase) checkIfTimeIsBusy(events []entities.Event) (*entities.Event, error) {
+func (u *UpdateEventUseCase) checkIfTimeIsBusy(events []entities.Event) error {
 	var values = funk.Filter(events, func(x entities.Event) bool {
 		return x.Time == u.Time
 	}).([]entities.Event)
 
 	if len(values) > 0 {
-		return nil, errors.ErrTimeBusy{Message: "The specified time busy."}
+		return errors.ErrTimeBusy{Message: "The specified time busy."}
 	}
-	return nil, nil
+	return nil
 }
 
-func validateCreateArgs(useCase *CreateEventUseCase) map[string]string {
+func validateUpdateArgs(useCase *UpdateEventUseCase) map[string]string {
 	errorsBag := make(map[string]string)
 	if useCase.Title == "" {
 		errorsBag["title"] = "cannot be null or empty"

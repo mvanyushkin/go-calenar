@@ -7,15 +7,15 @@ import (
 	"time"
 )
 
-type calendar struct {
+type Calendar struct {
 	store *store.EventStore
 }
 
-func NewCalendar(store store.EventStore) *calendar {
-	return &calendar{store: &store}
+func NewCalendar(store store.EventStore) *Calendar {
+	return &Calendar{store: &store}
 }
 
-func (c *calendar) CreateEvent(title entities.Title, description entities.Description, desiredTime time.Time) (*entities.Event, error) {
+func (c *Calendar) CreateEvent(title entities.Title, description entities.Description, desiredTime time.Time) (*entities.Event, error) {
 	useCase := usecases.CreateEventUseCase{
 		UseCase:     usecases.NewBaseUseCase(c.store),
 		Title:       title,
@@ -26,7 +26,7 @@ func (c *calendar) CreateEvent(title entities.Title, description entities.Descri
 	return useCase.Do()
 }
 
-func (c *calendar) Remove(event *entities.Event) error {
+func (c *Calendar) Remove(event *entities.Event) error {
 	useCase := usecases.RemoveEventUseCase{
 		UseCase: usecases.NewBaseUseCase(c.store),
 		Event:   event,
@@ -35,7 +35,7 @@ func (c *calendar) Remove(event *entities.Event) error {
 	return useCase.Do()
 }
 
-func (c *calendar) List() ([]entities.Event, error) {
+func (c *Calendar) List() ([]entities.Event, error) {
 	useCase := usecases.FetchEventsUseCase{
 		UseCase: usecases.NewBaseUseCase(c.store),
 	}
@@ -43,10 +43,22 @@ func (c *calendar) List() ([]entities.Event, error) {
 	return useCase.Do()
 }
 
-func (c *calendar) Get(id entities.Id) (*entities.Event, error) {
+func (c *Calendar) Get(id entities.Id) (*entities.Event, error) {
 	useCase := usecases.GetEventUseCase{
 		UseCase: usecases.NewBaseUseCase(c.store),
 		Id:      id,
+	}
+
+	return useCase.Do()
+}
+
+func (c *Calendar) Update(evt entities.Event) error {
+	useCase := usecases.UpdateEventUseCase{
+		UseCase:     usecases.NewBaseUseCase(c.store),
+		Id:          evt.Id,
+		Title:       evt.Title,
+		Description: evt.Description,
+		Time:        evt.Time,
 	}
 
 	return useCase.Do()

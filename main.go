@@ -7,9 +7,12 @@ import (
 	"github.com/heetch/confita"
 	"github.com/heetch/confita/backend/env"
 	"github.com/heetch/confita/backend/file"
+	"github.com/mvanyushkin/go-calendar/config"
+	server "github.com/mvanyushkin/go-calendar/grpc"
 	log "github.com/sirupsen/logrus"
+	"google.golang.org/grpc"
 	"io"
-	"net/http"
+	"net"
 	"os"
 )
 
@@ -25,18 +28,27 @@ func main() {
 	Serve(err, cfg)
 }
 
-func Serve(err error, cfg *Config) {
-	http.HandleFunc("/hello", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer, "test string\n")
-	})
-	log.Print("Listen...")
-	err = http.ListenAndServe(cfg.HttpListen, nil)
+func Serve(err error, cfg *config.Config) {
+	lis, err := net.Listen("tcp", "localhost:3333")
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
+	var opts []grpc.ServerOption
+	grpcServer := grpc.NewServer(opts...)
+	server.RegisterCalendarServer(grpcServer, server.CalendarHandler{})
+	grpcServer.Serve(lis)
+
+	//http.HandleFunc("/hello", func(writer http.ResponseWriter, request *http.Request) {
+	//	fmt.Fprint(writer, "test string\n")
+	//})
+	//log.Print("Listen...")
+	//err = http.ListenAndServe(cfg.HttpListen, nil)
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
 }
 
-func GetConfig() (*Config, error) {
+func GetConfig() (*config.Config, error) {
 	configFilePath := flag.String("config", "", "settings file")
 	flag.Parse()
 
@@ -45,7 +57,7 @@ func GetConfig() (*Config, error) {
 		file.NewBackend(*configFilePath),
 	)
 
-	cfg := Config{}
+	cfg := config.Config{}
 	err := loader.Load(context.Background(), &cfg)
 	if err != nil {
 		return nil, err
