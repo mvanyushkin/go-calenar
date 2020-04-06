@@ -59,33 +59,41 @@ func (g CalendarHandler) Remove(ctx context.Context, r *RemoveEventRequestDto) (
 }
 
 func (g CalendarHandler) GetForDate(context.Context, *Empty) (*EventsResponse, error) {
+	return g.getByCriteria(func(x entities.Event) bool {
+		return x.Time.Unix() >= time.Now().Unix() && x.Time.Unix() <= x.Time.AddDate(0, 0, 1).Unix()
+	})
+}
+
+func (g CalendarHandler) GetForWeek(context.Context, *Empty) (*EventsResponse, error) {
+	return g.getByCriteria(func(x entities.Event) bool {
+		return x.Time.Unix() >= time.Now().Unix() && x.Time.Unix() <= x.Time.AddDate(0, 0, 7).Unix()
+	})
+}
+
+func (g CalendarHandler) GetForMonth(context.Context, *Empty) (*EventsResponse, error) {
+	return g.getByCriteria(func(x entities.Event) bool {
+		return x.Time.Unix() >= time.Now().Unix() && x.Time.Unix() <= x.Time.AddDate(0, 0, 30).Unix()
+	})
+}
+
+func (g CalendarHandler) getByCriteria(criteria func(x entities.Event) bool) (*EventsResponse, error) {
 	events, err := g.Calendar.List()
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "Something went wrong")
 	}
 
-	var values = funk.Filter(events, func(x entities.Event) bool {
-		return x.Time.Unix() >= time.Now().Unix() && x.Time.Unix() <= x.Time.AddDate(0, 0, 1).Unix()
-	}).([]entities.Event)
-
-	var items = funk.Map(values, func(x entities.Event) *CreateEventRequestDto {
-		 s := CreateEventRequestDto{
-			 Data:                 ,
-			 XXX_NoUnkeyedLiteral: struct{}{},
-			 XXX_unrecognized:     nil,
-			 XXX_sizecache:        0,
-		 }
-	}).([]entities.Event)
+	var values = funk.Filter(events, criteria).([]entities.Event)
+	var items = funk.Map(values, func(x entities.Event) *EventDto {
+		item := &EventDto{
+			Id:          int32(x.Id),
+			Title:       string(x.Title),
+			Description: string(x.Description),
+			Time:        x.Time.Unix(),
+		}
+		return item
+	}).([]*EventDto)
 
 	return &EventsResponse{
-		Events: ,
+		Events: items,
 	}, nil
-}
-
-func (g CalendarHandler) GetForWeek(context.Context, *Empty) (*EventsResponse, error) {
-	panic("implement me")
-}
-
-func (g CalendarHandler) GetForMonth(context.Context, *Empty) (*EventsResponse, error) {
-	panic("implement me")
 }

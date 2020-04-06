@@ -12,9 +12,10 @@ service Calendar {
 }
 
 message EventDto {
-    string title = 1;
-    string description = 2;
-    int64 time = 3;
+    int32 id = 1;
+    string title = 2;
+    string description = 3;
+    int64 time = 4;
 }
 
 message CreateEventRequestDto {
@@ -35,7 +36,7 @@ message RemoveEventRequestDto {
 }
 
 message EventsResponse {
-    repeated CreateEventRequestDto events = 1;
+    repeated EventDto events = 1;
 }
 
 message Empty {

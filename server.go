@@ -17,38 +17,32 @@ import (
 )
 
 func main() {
-	cfg, err := GetConfig()
+	cfg, err := getConfig()
 	if err != nil {
 		fmt.Printf("The config file is broken: %v", err.Error())
 		os.Exit(-1)
 	}
 
-	SetupLogger(cfg.LogFile, cfg.LogLevel)
-
-	Serve(err, cfg)
+	setupLogger(cfg.LogFile, cfg.LogLevel)
+	log.Info("application started.")
+	serve(err, cfg.HttpListen)
 }
 
-func Serve(err error, cfg *config.Config) {
-	lis, err := net.Listen("tcp", "localhost:3333")
+func serve(err error, binding string) {
+	lis, err := net.Listen("tcp", binding)
 	if err != nil {
 		panic(err)
 	}
 	var opts []grpc.ServerOption
 	grpcServer := grpc.NewServer(opts...)
 	server.RegisterCalendarServer(grpcServer, server.CalendarHandler{})
-	grpcServer.Serve(lis)
-
-	//http.HandleFunc("/hello", func(writer http.ResponseWriter, request *http.Request) {
-	//	fmt.Fprint(writer, "test string\n")
-	//})
-	//log.Print("Listen...")
-	//err = http.ListenAndServe(cfg.HttpListen, nil)
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
+	err = grpcServer.Serve(lis)
+	if err != nil {
+		log.Errorf("the serve process has failed, occurred an exception \n", err.Error())
+	}
 }
 
-func GetConfig() (*config.Config, error) {
+func getConfig() (*config.Config, error) {
 	configFilePath := flag.String("config", "", "settings file")
 	flag.Parse()
 
@@ -66,7 +60,7 @@ func GetConfig() (*config.Config, error) {
 	return &cfg, nil
 }
 
-func SetupLogger(filePath string, logLevel string) {
+func setupLogger(filePath string, logLevel string) {
 	f, err := os.OpenFile(filePath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0666)
 	log.SetOutput(os.Stdout)
 	if err == nil {

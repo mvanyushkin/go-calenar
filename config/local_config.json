@@ -1,0 +1,5 @@
+{
+  "httplisten": ":8033",
+  "logfile": "output.log",
+  "loglevel": "debug"
+}
