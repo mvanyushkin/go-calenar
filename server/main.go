@@ -42,7 +42,7 @@ func serve(err error, binding string) {
 	})
 	err = grpcServer.Serve(lis)
 	if err != nil {
-		log.Errorf("the serve process has failed, occurred an exception \n", err.Error())
+		log.Errorf("the serve process has failed, occurred an exception: %v \n", err.Error())
 	}
 }
 
