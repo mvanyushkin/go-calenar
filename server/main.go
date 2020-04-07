@@ -7,6 +7,8 @@ import (
 	"github.com/heetch/confita"
 	"github.com/heetch/confita/backend/env"
 	"github.com/heetch/confita/backend/file"
+	"github.com/mvanyushkin/go-calendar/calendar"
+	"github.com/mvanyushkin/go-calendar/calendar/store"
 	"github.com/mvanyushkin/go-calendar/config"
 	server "github.com/mvanyushkin/go-calendar/grpc"
 	log "github.com/sirupsen/logrus"
@@ -35,7 +37,9 @@ func serve(err error, binding string) {
 	}
 	var opts []grpc.ServerOption
 	grpcServer := grpc.NewServer(opts...)
-	server.RegisterCalendarServer(grpcServer, server.CalendarHandler{})
+	server.RegisterCalendarServer(grpcServer, server.CalendarHandler{
+		Calendar: calendar.NewCalendar(store.NewInMemoryEventStore()),
+	})
 	err = grpcServer.Serve(lis)
 	if err != nil {
 		log.Errorf("the serve process has failed, occurred an exception \n", err.Error())

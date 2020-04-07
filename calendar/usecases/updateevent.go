@@ -45,7 +45,7 @@ func (u *UpdateEventUseCase) Do() error {
 
 func (u *UpdateEventUseCase) checkIfTimeIsBusy(events []entities.Event) error {
 	var values = funk.Filter(events, func(x entities.Event) bool {
-		return x.Time == u.Time
+		return x.Time == u.Time && x.Id != u.Id
 	}).([]entities.Event)
 
 	if len(values) > 0 {

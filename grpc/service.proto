@@ -3,10 +3,10 @@ syntax = "proto3";
 package grpc;
 
 service Calendar {
-    rpc Create (CreateEventRequestDto) returns (CreateResponseDto);
-    rpc Update (UpdateEventRequestDto) returns (Empty);
-    rpc Remove (RemoveEventRequestDto) returns (Empty);
-    rpc GetForDate (Empty) returns (EventsResponse);
+    rpc Create (EventDto) returns (CreateResponseDto);
+    rpc Update (EventDto) returns (Empty);
+    rpc Remove (EventDto) returns (Empty);
+    rpc GetForDate (DateRequest) returns (EventsResponse);
     rpc GetForWeek (Empty) returns (EventsResponse);
     rpc GetForMonth (Empty) returns (EventsResponse);
 }
@@ -18,20 +18,7 @@ message EventDto {
     int64 time = 4;
 }
 
-message CreateEventRequestDto {
-    EventDto data = 1;
-}
-
 message CreateResponseDto {
-    int32 id = 1;
-}
-
-message UpdateEventRequestDto {
-    int32 id = 1;
-    EventDto data = 2;
-}
-
-message RemoveEventRequestDto {
     int32 id = 1;
 }
 
@@ -40,4 +27,8 @@ message EventsResponse {
 }
 
 message Empty {
+}
+
+message DateRequest {
+    int64 day = 1;
 }
