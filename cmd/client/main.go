@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	c "github.com/mvanyushkin/go-calendar/grpc"
+	c "github.com/mvanyushkin/go-calendar/apicontracts"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
 	"os"

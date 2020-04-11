@@ -12,7 +12,11 @@ type RemoveEventUseCase struct {
 }
 
 func (u *RemoveEventUseCase) Do() error {
-	events, _ := u.store.List()
+	events, err := u.store.List()
+	if err != nil {
+		return err
+	}
+
 	var values = funk.Filter(events, func(x entities.Event) bool {
 		return x.Id == u.Event.Id
 	}).([]entities.Event)
