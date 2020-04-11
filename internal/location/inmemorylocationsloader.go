@@ -1,7 +1,7 @@
 package location
 
 import (
-	"github.com/mvanyushkin/go-calendar/calendar/entities"
+	"github.com/mvanyushkin/go-calendar/internal/entities"
 )
 
 type InMemoryLocationsLoader struct{}

@@ -2,8 +2,8 @@ package grpc
 
 import (
 	"context"
-	"github.com/mvanyushkin/go-calendar/calendar"
-	"github.com/mvanyushkin/go-calendar/calendar/entities"
+	"github.com/mvanyushkin/go-calendar/internal"
+	"github.com/mvanyushkin/go-calendar/internal/entities"
 	log "github.com/sirupsen/logrus"
 	"github.com/thoas/go-funk"
 	"google.golang.org/grpc/codes"
@@ -12,7 +12,7 @@ import (
 )
 
 type CalendarHandler struct {
-	Calendar *calendar.Calendar
+	Calendar *internal.Calendar
 }
 
 func (g CalendarHandler) Create(ctx context.Context, e *EventDto) (*CreateResponseDto, error) {

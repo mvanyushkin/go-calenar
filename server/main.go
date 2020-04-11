@@ -7,10 +7,10 @@ import (
 	"github.com/heetch/confita"
 	"github.com/heetch/confita/backend/env"
 	"github.com/heetch/confita/backend/file"
-	"github.com/mvanyushkin/go-calendar/calendar"
-	"github.com/mvanyushkin/go-calendar/calendar/store"
 	"github.com/mvanyushkin/go-calendar/config"
 	server "github.com/mvanyushkin/go-calendar/grpc"
+	"github.com/mvanyushkin/go-calendar/internal"
+	"github.com/mvanyushkin/go-calendar/internal/store"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"io"
@@ -27,10 +27,10 @@ func main() {
 
 	setupLogger(cfg.LogFile, cfg.LogLevel)
 	log.Info("application started.")
-	serve(err, cfg.HttpListen)
+	serve(cfg.HttpListen, cfg.ConnectionString)
 }
 
-func serve(err error, binding string) {
+func serve(binding string, connectionString string) {
 	lis, err := net.Listen("tcp", binding)
 	if err != nil {
 		panic(err)
@@ -38,7 +38,7 @@ func serve(err error, binding string) {
 	var opts []grpc.ServerOption
 	grpcServer := grpc.NewServer(opts...)
 	server.RegisterCalendarServer(grpcServer, server.CalendarHandler{
-		Calendar: calendar.NewCalendar(store.NewInMemoryEventStore()),
+		Calendar: internal.NewCalendar(store.NewDatabaseEventStore(connectionString)),
 	})
 	err = grpcServer.Serve(lis)
 	if err != nil {

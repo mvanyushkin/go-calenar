@@ -2,7 +2,7 @@ package errors
 
 import (
 	"fmt"
-	"github.com/mvanyushkin/go-calendar/calendar/entities"
+	"github.com/mvanyushkin/go-calendar/internal/entities"
 	"strings"
 )
 

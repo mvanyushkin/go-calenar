@@ -1,3 +1,2 @@
-pushd ..
-cd cmd/client
+cd ../cmd/client
 ./client

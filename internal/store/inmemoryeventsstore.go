@@ -1,8 +1,8 @@
 package store
 
 import (
-	"github.com/mvanyushkin/go-calendar/calendar/entities"
-	"github.com/mvanyushkin/go-calendar/calendar/errors"
+	"github.com/mvanyushkin/go-calendar/internal/entities"
+	"github.com/mvanyushkin/go-calendar/internal/errors"
 	"github.com/thoas/go-funk"
 	"sync"
 )

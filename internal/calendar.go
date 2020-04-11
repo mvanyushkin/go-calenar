@@ -1,9 +1,9 @@
-package calendar
+package internal
 
 import (
-	"github.com/mvanyushkin/go-calendar/calendar/entities"
-	"github.com/mvanyushkin/go-calendar/calendar/store"
-	"github.com/mvanyushkin/go-calendar/calendar/usecases"
+	"github.com/mvanyushkin/go-calendar/internal/entities"
+	"github.com/mvanyushkin/go-calendar/internal/store"
+	"github.com/mvanyushkin/go-calendar/internal/usecases"
 	"time"
 )
 

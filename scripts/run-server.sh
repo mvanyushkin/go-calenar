@@ -1,3 +1,2 @@
-pushd ..
-cd cmd/server
+cd ../cmd/server
 ./server --config local_config.json
