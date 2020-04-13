@@ -5,4 +5,5 @@ type Config struct {
 	LogFile          string `config:"logfile"`
 	LogLevel         string `config:"loglevel"`
 	ConnectionString string `config:"connectionstring"`
+	RabbitMQ         string `config:"rabbitmq"`
 }

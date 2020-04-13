@@ -112,3 +112,5 @@ go.sum
 
 # End of https://www.gitignore.io/api/go,intellij+all
 *.log
+/build/
+/build/server/

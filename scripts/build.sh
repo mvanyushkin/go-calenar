@@ -42,11 +42,17 @@ go test ../...
 
 echo '======== Building ========='
 
-go build -o ../cmd/server/server ../server/main.go
-go build -o ../cmd/client/client ../client/main.go
-cp ../config/local_config.json ../cmd/server/local_config.json
+go build -o ../build/server/server ../cmd/server/main.go
+go build -o ../build/client/client ../cmd/client/main.go
+go build -o ../build/reminder/reminder ../cmd/reminder/main.go
+go build -o ../build/sender/sender ../cmd/sender/main.go
+cp ../local_config.json ../build/server/local_config.json
+cp ../local_config.json ../build/reminder/local_config.json
+cp ../local_config.json ../build/sender/local_config.json
 
 echo '======== Setting up the access rights ========='
-chmod +x ../cmd/server/server
-chmod +x ../cmd/client/client
+chmod +x ../build/server/server
+chmod +x ../build/client/client
+chmod +x ../build/sender/sender
+chmod +x ../build/reminder/reminder
 

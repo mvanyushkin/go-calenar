@@ -1,10 +1,6 @@
 -- +goose Up
 -- SQL in this section is executed when the migration is applied.
 
--- SEQUENCE: public.ddd_id_seq
-
--- DROP SEQUENCE public.ddd_id_seq;
-
 CREATE SEQUENCE public.events_id_seq
     INCREMENT 1
     START 1
@@ -21,6 +17,7 @@ CREATE TABLE public.events
     title text COLLATE pg_catalog."default",
     description text COLLATE pg_catalog."default",
     date timestamp without time zone,
+    reminded boolean DEFAULT false,
     CONSTRAINT events_pkey PRIMARY KEY (id)
 )
 
