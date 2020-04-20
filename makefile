@@ -42,7 +42,7 @@ build:
 
 run:
 	goose -dir ./scripts/migrations postgres "user=$(PG_USERNAME) password=$(PG_PASSWORD) dbname=$(DB_NAME) sslmode=disable" up
-	./build/server/server& ./build/sender/sender &./build/server/reminder &./build/client/client
+	./build/server/server& ./build/sender/sender &./build/reminder/reminder &./build/client/client
 
 clean:
 	@echo "[x] Cleaning up the previous build result"

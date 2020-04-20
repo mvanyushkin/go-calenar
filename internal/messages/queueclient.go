@@ -38,10 +38,10 @@ func (q *QueueClient) ensureConnected() {
 				q.connectionClosedCh = make(chan bool)
 				q.setIsClosed(false)
 				q.connectionEstablishedCh <- true
-				reason, ok := <-q.conn.NotifyClose(make(chan *amqp.Error))
+				reason, _ := <-q.conn.NotifyClose(make(chan *amqp.Error))
 				q.setIsClosed(true)
 				q.connectionClosedCh <- true
-				log.Errorf("connection to rabbitmq is lost, reason: %v", reason, ok)
+				log.Errorf("connection to rabbitmq is lost, reason: %v", reason)
 			} else {
 				time.Sleep(time.Second)
 			}
@@ -58,14 +58,14 @@ func (q *QueueClient) establishConnection() error {
 	}
 	log.Info("done.")
 
-	log.Infof("creating channel...", q.connectionString)
+	log.Info("creating channel...")
 	ch, err := conn.Channel()
 	if err != nil {
 		return err
 	}
 	log.Info("done.")
 
-	log.Infof("declaring queue...", q.connectionString)
+	log.Info("declaring queue...")
 	queue, err := ch.QueueDeclare("calendar_queue", true, false, false, false, nil)
 	if err != nil {
 		return err
@@ -83,7 +83,7 @@ func (q *QueueClient) establishConnection() error {
 }
 
 func (q *QueueClient) Close() error {
-	log.Infof("closing channel...", q.connectionString)
+	log.Info("closing channel...")
 	err := q.ch.Close()
 	if err != nil {
 		return err
