@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	c "github.com/mvanyushkin/go-calendar/api"
+	"github.com/mvanyushkin/go-calendar/pkg/calendar"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
 	"os"
@@ -22,7 +22,7 @@ func main() {
 
 	defer conn.Close()
 
-	client := c.NewCalendarClient(conn)
+	client := calendar.NewCalendarClient(conn)
 	nowTimestamp := time.Now()
 
 	fmt.Println("Creating a new event for tomorrow...")
@@ -35,7 +35,7 @@ func main() {
 	respMonth := createEvent(err, client, nowTimestamp.AddDate(0, 0, 25))
 
 	fmt.Println("Creating a new event for tomorrow again...")
-	_, err = client.Create(context.Background(), &c.EventDto{
+	_, err = client.Create(context.Background(), &calendar.EventDto{
 		Title:       "test title",
 		Description: "test description",
 		Time:        nowTimestamp.AddDate(0, 0, 1).Unix(),
@@ -45,7 +45,7 @@ func main() {
 		fmt.Printf("occured exception %v it's ok\n", err.Error())
 	}
 
-	tomorrowsEvents, err := client.GetForDate(context.Background(), &c.DateRequest{
+	tomorrowsEvents, err := client.GetForDate(context.Background(), &calendar.DateRequest{
 		Day: time.Now().AddDate(0, 0, 1).Unix(),
 	})
 
@@ -54,14 +54,14 @@ func main() {
 		fmt.Printf("id %v title %v description %v \n", event.Id, event.Title, event.Description)
 	}
 
-	weeksEvents, err := client.GetForWeek(context.Background(), &c.Empty{})
+	weeksEvents, err := client.GetForWeek(context.Background(), &calendar.Empty{})
 
 	fmt.Println("Week's's events:")
 	for _, event := range weeksEvents.Events {
 		fmt.Printf("id %v title %v description %v \n", event.Id, event.Title, event.Description)
 	}
 
-	monthsEvents, err := client.GetForMonth(context.Background(), &c.Empty{})
+	monthsEvents, err := client.GetForMonth(context.Background(), &calendar.Empty{})
 
 	fmt.Println("Months's's events:")
 	for _, event := range monthsEvents.Events {
@@ -71,7 +71,7 @@ func main() {
 	for _, event := range monthsEvents.Events {
 		fmt.Printf("Modifying event %v \n", event.Id)
 		event.Title = "modified title"
-		_, err = client.Update(context.Background(), &c.EventDto{
+		_, err = client.Update(context.Background(), &calendar.EventDto{
 			Id:          event.Id,
 			Title:       event.Title,
 			Description: event.Description,
@@ -84,7 +84,7 @@ func main() {
 		}
 	}
 
-	_, err = client.Remove(context.Background(), &c.EventDto{
+	_, err = client.Remove(context.Background(), &calendar.EventDto{
 		Id: respMonth.Id,
 	})
 
@@ -93,8 +93,8 @@ func main() {
 	}
 }
 
-func createEvent(err error, client c.CalendarClient, nowTimestamp time.Time) *c.CreateResponseDto {
-	resp, err := client.Create(context.Background(), &c.EventDto{
+func createEvent(err error, client calendar.CalendarClient, nowTimestamp time.Time) *calendar.CreateResponseDto {
+	resp, err := client.Create(context.Background(), &calendar.EventDto{
 		Title:       "test title",
 		Description: "test description",
 		Time:        nowTimestamp.Unix(),

@@ -4,7 +4,7 @@
 // 	protoc        (unknown)
 // source: service.proto
 
-package api
+package calendar
 
 import (
 	context "context"

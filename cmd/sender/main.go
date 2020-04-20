@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/mvanyushkin/go-calendar/config"
+	"github.com/mvanyushkin/go-calendar/internal/config"
 	"github.com/mvanyushkin/go-calendar/internal/sender"
 	"github.com/mvanyushkin/go-calendar/logger"
 	log "github.com/sirupsen/logrus"

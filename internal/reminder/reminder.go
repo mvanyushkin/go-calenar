@@ -1,6 +1,7 @@
 package reminder
 
 import (
+	"context"
 	_ "github.com/jackc/pgx/stdlib"
 	"github.com/jmoiron/sqlx"
 	"github.com/mvanyushkin/go-calendar/internal/entities"
@@ -14,13 +15,70 @@ type reminder struct {
 	dbConnectionString    string
 	queueConnectionString string
 	queueClient           *messages.QueueClient
+	context               context.Context
 }
 
-func CreateReminder(dbConnectionString string, queueConnectionString string) *reminder {
+func CreateReminder(dbConnectionString string, queueConnectionString string, ctx context.Context) *reminder {
 	return &reminder{
 		dbConnectionString:    dbConnectionString,
 		queueConnectionString: queueConnectionString,
+		context:               ctx,
 	}
+}
+
+func (r *reminder) Do() error {
+	timerChannel := time.After(time.Nanosecond)
+	for {
+		select {
+		case <-timerChannel:
+			err := r.internalDo()
+			if err != nil {
+				return err
+			}
+			log.Info("Sleeping.... Z-z-z")
+			time.Sleep(time.Minute)
+			log.Info("WAKING UP!")
+		case <-r.context.Done():
+			return nil
+		}
+		timerChannel = time.After(time.Minute)
+	}
+}
+
+func (r *reminder) internalDo() error {
+	err := r.openSession()
+	if err != nil {
+		return err
+	}
+	defer r.closeSession()
+
+	rows, err := r.selectRows()
+	if err != nil {
+		return err
+	}
+
+	for _, row := range rows {
+		tx, err := r.db.Begin()
+		if err != nil {
+			return err
+		}
+
+		err = r.setReminded(row)
+		if err != nil {
+			return err
+		}
+
+		err = r.sendToQueue(row)
+		if err != nil {
+			return err
+		}
+
+		err = tx.Commit()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (r *reminder) openSession() error {
@@ -107,52 +165,4 @@ func (r *reminder) selectRows() ([]entities.Event, error) {
 	}
 
 	return events, nil
-}
-
-func (r *reminder) internalDo() error {
-	err := r.openSession()
-	if err != nil {
-		return err
-	}
-	defer r.closeSession()
-
-	rows, err := r.selectRows()
-	if err != nil {
-		return err
-	}
-
-	for _, row := range rows {
-		tx, err := r.db.Begin()
-		if err != nil {
-			return err
-		}
-
-		err = r.setReminded(row)
-		if err != nil {
-			return err
-		}
-
-		err = r.sendToQueue(row)
-		if err != nil {
-			return err
-		}
-
-		err = tx.Commit()
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (r *reminder) Do() error {
-	for {
-		err := r.internalDo()
-		if err != nil {
-			return err
-		}
-		log.Info("Sleeping.... Z-z-z")
-		time.Sleep(time.Minute)
-		log.Info("WAKING UP!")
-	}
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/mvanyushkin/go-calendar/internal"
 	"github.com/mvanyushkin/go-calendar/internal/entities"
+	"github.com/mvanyushkin/go-calendar/pkg/calendar"
 	log "github.com/sirupsen/logrus"
 	"github.com/thoas/go-funk"
 	"google.golang.org/grpc/codes"
@@ -15,7 +16,7 @@ type CalendarHandler struct {
 	Calendar *internal.Calendar
 }
 
-func (g CalendarHandler) Create(ctx context.Context, e *EventDto) (*CreateResponseDto, error) {
+func (g CalendarHandler) Create(ctx context.Context, e *calendar.EventDto) (*calendar.CreateResponseDto, error) {
 	title := entities.Title(e.Title)
 	desc := entities.Description(e.Description)
 	time := time.Unix(e.Time, 0)
@@ -24,12 +25,12 @@ func (g CalendarHandler) Create(ctx context.Context, e *EventDto) (*CreateRespon
 		return nil, status.Errorf(codes.InvalidArgument, "Something went wrong")
 	}
 	log.Info("Event created.")
-	return &CreateResponseDto{
+	return &calendar.CreateResponseDto{
 		Id: int32(evt.Id),
 	}, nil
 }
 
-func (g CalendarHandler) Update(ctx context.Context, e *EventDto) (*Empty, error) {
+func (g CalendarHandler) Update(ctx context.Context, e *calendar.EventDto) (*calendar.Empty, error) {
 	title := entities.Title(e.Title)
 	desc := entities.Description(e.Description)
 	time := time.Unix(e.Time, 0)
@@ -44,10 +45,10 @@ func (g CalendarHandler) Update(ctx context.Context, e *EventDto) (*Empty, error
 	}
 
 	log.Info("Event updated.")
-	return &Empty{}, nil
+	return &calendar.Empty{}, nil
 }
 
-func (g CalendarHandler) Remove(ctx context.Context, r *EventDto) (*Empty, error) {
+func (g CalendarHandler) Remove(ctx context.Context, r *calendar.EventDto) (*calendar.Empty, error) {
 	evt, err := g.Calendar.Get(entities.Id(r.Id))
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "Something went wrong")
@@ -59,10 +60,10 @@ func (g CalendarHandler) Remove(ctx context.Context, r *EventDto) (*Empty, error
 	}
 
 	log.Info("Event removed.")
-	return &Empty{}, nil
+	return &calendar.Empty{}, nil
 }
 
-func (g CalendarHandler) GetForDate(ctx context.Context, d *DateRequest) (*EventsResponse, error) {
+func (g CalendarHandler) GetForDate(ctx context.Context, d *calendar.DateRequest) (*calendar.EventsResponse, error) {
 	date := time.Unix(d.Day, 0)
 	return g.getByCriteria(func(x entities.Event) bool {
 		lY, lM, lD := x.Time.Date()
@@ -71,19 +72,19 @@ func (g CalendarHandler) GetForDate(ctx context.Context, d *DateRequest) (*Event
 	})
 }
 
-func (g CalendarHandler) GetForWeek(context.Context, *Empty) (*EventsResponse, error) {
+func (g CalendarHandler) GetForWeek(context.Context, *calendar.Empty) (*calendar.EventsResponse, error) {
 	return g.getByCriteria(func(x entities.Event) bool {
 		return x.Time.Unix() >= time.Now().Unix() && x.Time.Unix() <= time.Now().AddDate(0, 0, 7).Unix()
 	})
 }
 
-func (g CalendarHandler) GetForMonth(context.Context, *Empty) (*EventsResponse, error) {
+func (g CalendarHandler) GetForMonth(context.Context, *calendar.Empty) (*calendar.EventsResponse, error) {
 	return g.getByCriteria(func(x entities.Event) bool {
 		return x.Time.Unix() >= time.Now().Unix() && x.Time.Unix() <= time.Now().AddDate(0, 0, 30).Unix()
 	})
 }
 
-func (g CalendarHandler) getByCriteria(criteria func(x entities.Event) bool) (*EventsResponse, error) {
+func (g CalendarHandler) getByCriteria(criteria func(x entities.Event) bool) (*calendar.EventsResponse, error) {
 	log.Info("Getting events by a criteria")
 	events, err := g.Calendar.List()
 	if err != nil {
@@ -91,17 +92,17 @@ func (g CalendarHandler) getByCriteria(criteria func(x entities.Event) bool) (*E
 	}
 
 	var values = funk.Filter(events, criteria).([]entities.Event)
-	var items = funk.Map(values, func(x entities.Event) *EventDto {
-		item := &EventDto{
+	var items = funk.Map(values, func(x entities.Event) *calendar.EventDto {
+		item := &calendar.EventDto{
 			Id:          int32(x.Id),
 			Title:       string(x.Title),
 			Description: string(x.Description),
 			Time:        x.Time.Unix(),
 		}
 		return item
-	}).([]*EventDto)
+	}).([]*calendar.EventDto)
 
-	return &EventsResponse{
+	return &calendar.EventsResponse{
 		Events: items,
 	}, nil
 }

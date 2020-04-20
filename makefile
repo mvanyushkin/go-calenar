@@ -34,9 +34,9 @@ build:
 	@echo  "-> Done"
 
 	@echo "[x] Copying configuration files to the their own binaries"
-	cp local_config.json build/server/local_config.json
-	cp local_config.json build/reminder/local_config.json
-	cp local_config.json build/sender/local_config.json
+	cp configs/server/local_config.json build/server/local_config.json
+	cp configs/server/local_config.json build/reminder/local_config.json
+	cp configs/server/local_config.json build/sender/local_config.json
 	@echo  "-> Fuck Yeah! Nice job, Man!"
 
 

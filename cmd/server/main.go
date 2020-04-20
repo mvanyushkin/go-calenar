@@ -2,10 +2,11 @@ package main
 
 import (
 	server "github.com/mvanyushkin/go-calendar/api"
-	"github.com/mvanyushkin/go-calendar/config"
 	"github.com/mvanyushkin/go-calendar/internal"
+	"github.com/mvanyushkin/go-calendar/internal/config"
 	"github.com/mvanyushkin/go-calendar/internal/store"
 	"github.com/mvanyushkin/go-calendar/logger"
+	"github.com/mvanyushkin/go-calendar/pkg/calendar"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"net"
@@ -32,7 +33,7 @@ func serve(binding string, connectionString string) error {
 	}
 	var opts []grpc.ServerOption
 	grpcServer := grpc.NewServer(opts...)
-	server.RegisterCalendarServer(grpcServer, server.CalendarHandler{
+	calendar.RegisterCalendarServer(grpcServer, server.CalendarHandler{
 		Calendar: internal.NewCalendar(store.NewDatabaseEventStore(connectionString)),
 	})
 	return grpcServer.Serve(lis)
