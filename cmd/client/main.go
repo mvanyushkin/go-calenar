@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	c "github.com/mvanyushkin/go-calendar/apicontracts"
+	c "github.com/mvanyushkin/go-calendar/api"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
 	"os"
@@ -15,7 +15,7 @@ func main() {
 		grpc.WithInsecure(),
 	}
 
-	conn, err := grpc.Dial("127.0.0.1:8033", opts...)
+	conn, err := grpc.Dial("127.0.0.1:8888", opts...)
 	if err != nil {
 		grpclog.Fatalf("fail to dial: %v", err)
 	}

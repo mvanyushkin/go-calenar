@@ -1,5 +1,5 @@
 {
-  "httplisten": ":8033",
+  "httplisten": ":8888",
   "logfile": "output.log",
   "loglevel": "debug",
   "connectionstring": "postgres://postgres:aA123456@localhost:5432/calendar?sslmode=disable",

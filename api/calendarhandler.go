@@ -1,4 +1,4 @@
-package apicontracts
+package api
 
 import (
 	"context"

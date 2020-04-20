@@ -1,1 +1,1 @@
-protoc -I ../grpc ../grpc/service.proto --go_out=plugins=grpc:../grpc
+protoc -I ../api ../api/service.proto --go_out=plugins=grpc:../api

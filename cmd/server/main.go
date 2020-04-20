@@ -1,7 +1,7 @@
 package main
 
 import (
-	server "github.com/mvanyushkin/go-calendar/apicontracts"
+	server "github.com/mvanyushkin/go-calendar/api"
 	"github.com/mvanyushkin/go-calendar/config"
 	"github.com/mvanyushkin/go-calendar/internal"
 	"github.com/mvanyushkin/go-calendar/internal/store"

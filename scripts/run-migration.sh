@@ -1,1 +1,0 @@
-goose -dir ./migrations postgres "user=postgres password=aA123456 dbname=calendar sslmode=disable" up
