@@ -2,7 +2,6 @@ package config
 
 import (
 	"context"
-	"flag"
 	"github.com/heetch/confita"
 	"github.com/heetch/confita/backend/env"
 	"github.com/heetch/confita/backend/file"
@@ -10,11 +9,7 @@ import (
 	"path"
 )
 
-func GetConfig() (*Config, error) {
-	defaultConfigFileName := "local_config.json"
-	configFilePath := flag.String("config", "", "settings file")
-	flag.Parse()
-
+func GetConfig(configFilePath *string) (*Config, error) {
 	_, err := os.Stat(*configFilePath)
 
 	if configFilePath == nil || os.IsNotExist(err) {
@@ -23,7 +18,7 @@ func GetConfig() (*Config, error) {
 			return nil, err
 		}
 
-		defaultConfigPath := path.Join(wd, defaultConfigFileName)
+		defaultConfigPath := path.Join(wd, "local_config.json")
 		configFilePath = &defaultConfigPath
 	}
 

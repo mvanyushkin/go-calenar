@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	server "github.com/mvanyushkin/go-calendar/api"
 	"github.com/mvanyushkin/go-calendar/internal"
 	"github.com/mvanyushkin/go-calendar/internal/config"
@@ -13,7 +14,14 @@ import (
 )
 
 func main() {
-	cfg, err := config.GetConfig()
+	configFilePath := flag.String("config", "", "settings file")
+	flag.Parse()
+	if configFilePath == nil {
+		defaultConfigFileName := "local_config.json"
+		configFilePath = &defaultConfigFileName
+	}
+
+	cfg, err := config.GetConfig(configFilePath)
 	if err != nil {
 		log.Fatalf("The config file is broken: %v", err.Error())
 	}
@@ -24,6 +32,8 @@ func main() {
 	if err != nil {
 		log.Fatalf(err.Error())
 	}
+
+	log.Info("application is shutdown")
 }
 
 func serve(binding string, connectionString string) error {

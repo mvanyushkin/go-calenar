@@ -2,11 +2,13 @@ package reminder
 
 import (
 	"context"
+	"errors"
 	_ "github.com/jackc/pgx/stdlib"
 	"github.com/jmoiron/sqlx"
 	"github.com/mvanyushkin/go-calendar/internal/entities"
 	"github.com/mvanyushkin/go-calendar/internal/messages"
 	log "github.com/sirupsen/logrus"
+	"strings"
 	"time"
 )
 
@@ -18,19 +20,25 @@ type reminder struct {
 	context               context.Context
 }
 
-func CreateReminder(dbConnectionString string, queueConnectionString string, ctx context.Context) *reminder {
-	return &reminder{
+func New(dbConnectionString string, queueConnectionString string, ctx context.Context) (*reminder, error) {
+	r := &reminder{
 		dbConnectionString:    dbConnectionString,
 		queueConnectionString: queueConnectionString,
 		context:               ctx,
 	}
+	err := r.openSession()
+	if err != nil {
+		return nil, err
+	}
+
+	return r, nil
 }
 
 func (r *reminder) Do() error {
-	timerChannel := time.After(time.Nanosecond)
+	timer := time.NewTimer(time.Nanosecond)
 	for {
 		select {
-		case <-timerChannel:
+		case <-timer.C:
 			err := r.internalDo()
 			if err != nil {
 				return err
@@ -41,17 +49,15 @@ func (r *reminder) Do() error {
 		case <-r.context.Done():
 			return nil
 		}
-		timerChannel = time.After(time.Minute)
+		timer = time.NewTimer(time.Minute)
 	}
 }
 
-func (r *reminder) internalDo() error {
-	err := r.openSession()
-	if err != nil {
-		return err
-	}
-	defer r.closeSession()
+func (r *reminder) Close() {
+	r.closeSession()
+}
 
+func (r *reminder) internalDo() error {
 	rows, err := r.selectRows()
 	if err != nil {
 		return err
@@ -65,11 +71,19 @@ func (r *reminder) internalDo() error {
 
 		err = r.setReminded(row)
 		if err != nil {
+			rbackErr := tx.Rollback()
+			if rbackErr != nil {
+				return errors.New(strings.Join([]string{rbackErr.Error(), err.Error()}, ","))
+			}
 			return err
 		}
 
 		err = r.sendToQueue(row)
 		if err != nil {
+			rbackErr := tx.Rollback()
+			if rbackErr != nil {
+				return errors.New(strings.Join([]string{rbackErr.Error(), err.Error()}, ","))
+			}
 			return err
 		}
 

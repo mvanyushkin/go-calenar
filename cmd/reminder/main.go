@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"github.com/mvanyushkin/go-calendar/internal/config"
 	"github.com/mvanyushkin/go-calendar/internal/reminder"
 	"github.com/mvanyushkin/go-calendar/logger"
@@ -12,7 +13,14 @@ import (
 )
 
 func main() {
-	cfg, err := config.GetConfig()
+	configFilePath := flag.String("config", "", "settings file")
+	flag.Parse()
+	if configFilePath == nil {
+		defaultConfigFileName := "local_config.json"
+		configFilePath = &defaultConfigFileName
+	}
+
+	cfg, err := config.GetConfig(configFilePath)
 	if err != nil {
 		log.Fatalf("The config file is broken: %v", err.Error())
 	}
@@ -30,11 +38,15 @@ func main() {
 		cancel()
 	}()
 
-	r := reminder.CreateReminder(cfg.ConnectionString, "amqp://user:aA123456@localhost:5672/", ctx)
+	r, err := reminder.New(cfg.ConnectionString, cfg.RabbitMQ, ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	err = r.Do()
 	if err != nil {
 		log.Fatal(err)
-	} else {
-		log.Info("application is shutdown")
 	}
+
+	log.Info("application is shutdown")
 }
