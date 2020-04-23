@@ -38,7 +38,7 @@ func main() {
 		cancel()
 	}()
 
-	s := sender.CreateSender(cfg.RabbitMQ, ctx)
+	s := sender.New(ctx, cfg.RabbitMQ)
 	err = s.ListenMessages()
 	if err != nil {
 		log.Fatal(err)

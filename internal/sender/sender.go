@@ -12,7 +12,7 @@ type sender struct {
 	ctx                   context.Context
 }
 
-func CreateSender(queueConnectionString string, ctx context.Context) *sender {
+func New(ctx context.Context, queueConnectionString string) *sender {
 	return &sender{
 		queueConnectionString: queueConnectionString,
 		ctx:                   ctx,

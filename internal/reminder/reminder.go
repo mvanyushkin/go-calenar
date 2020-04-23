@@ -20,7 +20,7 @@ type reminder struct {
 	context               context.Context
 }
 
-func New(dbConnectionString string, queueConnectionString string, ctx context.Context) (*reminder, error) {
+func New(ctx context.Context, dbConnectionString string, queueConnectionString string) (*reminder, error) {
 	r := &reminder{
 		dbConnectionString:    dbConnectionString,
 		queueConnectionString: queueConnectionString,
@@ -41,7 +41,7 @@ func (r *reminder) Do() error {
 		case <-timer.C:
 			err := r.internalDo()
 			if err != nil {
-				return err
+				log.Errorf("Current reminding iteration failed, occurred an exception: %v", err.Error())
 			}
 			log.Info("Sleeping.... Z-z-z")
 			time.Sleep(time.Minute)

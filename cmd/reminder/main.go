@@ -38,7 +38,7 @@ func main() {
 		cancel()
 	}()
 
-	r, err := reminder.New(cfg.ConnectionString, cfg.RabbitMQ, ctx)
+	r, err := reminder.New(ctx, cfg.ConnectionString, cfg.RabbitMQ)
 	if err != nil {
 		log.Fatal(err)
 	}
