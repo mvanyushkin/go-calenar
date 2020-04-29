@@ -49,5 +49,7 @@ clean:
 	rm -r -f ./build
 	@echo  "-> Done."
 
+docker-run:
+	docker-compose -f ./deploy/docker-compose.yml up
 
 

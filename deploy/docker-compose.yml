@@ -1,0 +1,70 @@
+version: "3.3"
+services:
+
+  sender:
+    build:
+      context: ../
+      dockerfile: ./deploy/sender/Dockerfile
+    network_mode: "host"
+    depends_on:
+      - server
+
+  reminder:
+    build:
+      context: ../
+      dockerfile: ./deploy/reminder/Dockerfile
+    network_mode: "host"
+    depends_on:
+      - server
+
+  server:
+    build:
+      context: ../
+      dockerfile: ./deploy/server/Dockerfile
+    network_mode: "host"
+    depends_on:
+      - migration
+
+  migration:
+    build:
+      context: ../
+      dockerfile: ./deploy/migration/Dockerfile
+    network_mode: "host"
+    depends_on:
+      - rabbitmq
+
+  rabbitmq:
+    image: 'bitnami/rabbitmq:3.8'
+    ports:
+      - '4369:4369'
+      - '5672:5672'
+      - '25672:25672'
+      - '15672:15672'
+    volumes:
+      - 'rabbitmq_data:/bitnami'
+    environment:
+      - RABBITMQ_PASSWORD=aA123456
+    network_mode: "host"
+    depends_on:
+      - postgres
+
+  postgres:
+    container_name: postgres_container
+    image: postgres
+    environment:
+      POSTGRES_DB: calendar
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-aA123456}
+      PGDATA: /data/postgres
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - "5432:5432"
+    network_mode: "host"
+
+
+volumes:
+  postgres:
+  pgadmin:
+  rabbitmq_data:
+    driver: local
